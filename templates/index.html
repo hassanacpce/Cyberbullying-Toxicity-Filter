@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Toxicity Filter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <span class="wordmark">Toxicity Filter</span>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button class="tab is-active" role="tab" id="tab-check" aria-selected="true" aria-controls="view-check">Check a comment</button>
+      <button class="tab" role="tab" id="tab-batch" aria-selected="false" aria-controls="view-batch" tabindex="-1">Review a file</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-check" class="view" role="tabpanel" aria-labelledby="tab-check">
+      <div class="desk">
+        <div class="paper">
+          <div id="editor">
+            <label for="comment" class="field-label">Comment to check</label>
+            <textarea id="comment" rows="7" maxlength="5000" placeholder="Paste a comment from your forum or chat."></textarea>
+            <div class="editor-foot">
+              <div class="examples">
+                <span>Try</span>
+                <button type="button" class="link" data-example="Thanks for the quick reply, that solved my problem.">a friendly reply</button>
+                <button type="button" class="link" data-example="You are such a pathetic loser, nobody asked for your opinion.">a rude reply</button>
+                <button type="button" class="link" data-example="I know where you live and I will hurt you, you worthless freak.">a threat</button>
+              </div>
+              <div class="actions">
+                <span class="hint">Ctrl + Enter</span>
+                <button type="button" id="check-btn" class="primary">Check comment</button>
+              </div>
+            </div>
+            <p id="check-error" class="error" role="alert" hidden></p>
+          </div>
+
+          <div id="result-text" hidden>
+            <p class="field-label">Marked comment</p>
+            <p id="marked" class="marked"></p>
+            <div class="editor-foot">
+              <p id="mark-note" class="note"></p>
+              <button type="button" id="edit-btn" class="secondary">Edit comment</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="verdict" id="verdict" aria-live="polite">
+          <p id="verdict-empty" class="empty">The verdict, severity score and the words behind it will show up here.</p>
+
+          <div id="verdict-body" hidden>
+            <h2 id="verdict-word" class="verdict-word"></h2>
+            <p id="verdict-prob" class="verdict-prob"></p>
+
+            <div class="severity">
+              <p class="severity-head"><span>Severity</span><strong id="score-num"></strong></p>
+              <div class="ruler" id="ruler">
+                <i class="zone z-allow"></i><i class="zone z-review"></i><i class="zone z-remove"></i>
+                <b class="pin" id="pin"></b>
+              </div>
+              <div class="ruler-labels"><span>Allow</span><span>Review</span><span>Remove</span></div>
+            </div>
+
+            <dl class="probs" id="probs"></dl>
+
+            <h3>Why</h3>
+            <p id="why"></p>
+
+            <h3>Suggested action</h3>
+            <p id="action"></p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-batch" class="view" role="tabpanel" aria-labelledby="tab-batch" hidden>
+      <div class="batch-intro">
+        <div>
+          <h1 class="page-title">Review a file of comments</h1>
+          <p class="lede">Upload a CSV with a column named <code>text</code>. Every comment is checked and sorted with the most severe first.</p>
+        </div>
+        <label class="file-pick">
+          <input type="file" id="file" accept=".csv,text/csv">
+          <span id="file-name">Choose a CSV file</span>
+        </label>
+      </div>
+      <p id="batch-error" class="error" role="alert" hidden></p>
+
+      <div id="batch-out" hidden>
+        <div class="batch-bar">
+          <p id="batch-summary"></p>
+          <div class="batch-controls">
+            <label>Show
+              <select id="filter">
+                <option value="all">All comments</option>
+                <option value="mildly rude">Mildly rude</option>
+                <option value="toxic">Toxic</option>
+                <option value="safe">Safe</option>
+              </select>
+            </label>
+            <button type="button" id="download" class="secondary">Download results</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Comment</th><th>Verdict</th><th>Severity</th><th>Flagged words</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
